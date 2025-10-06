@@ -7,6 +7,42 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
+    <div class="header">Bob's Library</div>
+    <div class="button">
+        <button id="addBook">Add Book</button>
+    </div>
+    <div class="content">
+        <dialog>
+            <button>&times</button>
+            <div>Enter new book information</div>
+            <form id="bookForm">
+                <div class="formInput">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title">
+                </div>
+                <div class="formInput">
+                    <label for="author">Author:</label>
+                    <input type="text" id="author" name="author">
+                </div>
+                <div class="formInput">
+                    <label for="pages">No. of pages:</label>
+                    <input type="number" id="pages" name="pages">
+                </div>
+                <div id="radios">
+                    <div>
+                        <label for="read">Read</label>
+                        <input type="radio" id="read" name="read" value="read">
+                    </div>
+                    <div>
+                        <label for="notRead">Not Read</label>
+                        <input type="radio" id="notRead" name="read" value="notRead">
+                    </div>
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+        </dialog>
+        <div id="books"></div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
