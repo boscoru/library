@@ -2,43 +2,46 @@ const myLibrary = [];
 const dialog = document.querySelector("dialog");
 const showButton = document.querySelector("#addBook");
 const closeButton = document.querySelector("dialog button");
-const submitButton = document.querySelector('input[type="submit"]');
+const submitForm = document.getElementById('bookForm');
 const books = document.querySelector('#books');
 
 function inputBook(event) {
-    console.log('inputBook');
     event.preventDefault();
-    myForm = document.getElementById('bookForm');
-    formData = new FormData(myForm);
-    addBookToLibrary(formData.get('title'), formData.get('author'),
-        formData.get('pages'), formData.get('read'));
-    //this.reset();
+    if(submitForm.checkValidity) {
+        myForm = document.getElementById('bookForm');
+        formData = new FormData(myForm);
+        addBookToLibrary(formData.get('title'), formData.get('author'),
+            formData.get('pages'), formData.get('read'));
+        myForm.reset();
+        dialog.close();
+    }
 }
 
 function Book(title, author, pages, read) {
     this.id = crypto.randomUUID();
     this.title = title;
     this.author = author;
-    this.pages = pages;
+    this.pages = Number(pages);
     this.read = read;
 }
 
 function addBookToLibrary(title, author, pages, read) {
-    console.log('addBookToLibrary');
     newBook = new Book(title, author, pages, read);
-    console.log(newBook);
     myLibrary.push(newBook);
     myLibrary.sort((a, b) => a.title.toUpperCase() - b.title.toUpperCase());
-    console.log(myLibrary);
     displayLibrary();
 }
 
 function displayLibrary() {
-    console.log('displayLibrary');
+    books.replaceChildren();
     for (const book of myLibrary) {
-        console.log('display loop');
         let thisBook = document.createElement("div");
         thisBook.id = `book.id`;
+        thisBook.classList.add('book');
+        let delBook = document.createElement('button');
+        delBook.id = `del${book.id}`;
+        delBook.textContent = '\u00D7';
+        delBook.classList.add('delButton');
         let title = document.createElement("div");
         title.classList.add('bookTitle');
         title.textContent = book.title;
@@ -47,17 +50,41 @@ function displayLibrary() {
         author.textContent = 'By ' + book.author;
         let pages = document.createElement('div');
         pages.classList.add('bookInfo');
-        pages.textContent = book.pages + ' pages';
-        let read = document.createElement('div');
+        pages.textContent = book.pages.toLocaleString('en-US') + ' pages';
+        let buttonDiv = document.createElement('div');
+        buttonDiv.classList.add('button');
+        let read = document.createElement('button');
+        read.id = `read${book.id}`;
         read.classList.add('bookInfo');
-        if (book.read === 'read') read.textContent = 'Read';
-        if (book.read === 'notRead') read.textContent = 'Not Read';
+        read.classList.add('readToggle')
+        read.textContent = book.read;
         books.appendChild(thisBook);
+        thisBook.appendChild(delBook);
         thisBook.appendChild(title);
         thisBook.appendChild(author);
         thisBook.appendChild(pages);
-        thisBook.appendChild(read);
+        thisBook.appendChild(buttonDiv);
+        buttonDiv.appendChild(read);
     }
+}
+
+function delBook(id) {
+    let index = myLibrary.findIndex(item => item.id === id);
+    myLibrary.splice(index, 1);
+    displayLibrary();
+}
+
+function toggleRead(id) {
+    let index = myLibrary.findIndex(item => item.id === id);
+    if(myLibrary[index].read === 'Read') myLibrary[index].read = 'Not Read';
+    else if(myLibrary[index].read === 'Not Read') myLibrary[index].read = 'Read';
+    let readButton = document.getElementById(`read${id}`);
+    readButton.textContent = myLibrary[index].read;
+}
+
+function parseEvent(event) { 
+    if(event.target.id.substring(0, 3) === "del") delBook(event.target.id.slice(3));
+    else if(event.target.id.substring(0, 4) === 'read') toggleRead(event.target.id.slice(4));
 }
 
 // Opens dialog for form entry
@@ -70,4 +97,8 @@ closeButton.addEventListener("click", () => {
   dialog.close();
 });
 
-submitButton.addEventListener("click", inputBook);
+// Submits form data as new book
+submitForm.addEventListener("submit", inputBook);
+
+// Deletes book from myLibrary or changes Read state of book
+books.addEventListener('click', parseEvent);
