@@ -17,18 +17,24 @@ function inputBook(event) {
     }
 }
 
-function Book(title, author, pages, read) {
-    this.id = crypto.randomUUID();
-    this.title = title;
-    this.author = author;
-    this.pages = Number(pages);
-    this.read = read;
+class Book {
+    constructor(title, author, pages, read){
+        this.id = crypto.randomUUID();
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
+    }
 }
 
 function addBookToLibrary(title, author, pages, read) {
     newBook = new Book(title, author, pages, read);
     myLibrary.push(newBook);
-    myLibrary.sort((a, b) => a.title.toUpperCase() - b.title.toUpperCase());
+    myLibrary.sort((a,b) => {
+        if (a.title.toUpperCase() < b.title.toUpperCase()) return -1;
+        if (a.title.toUpperCase() > b.title.toUpperCase()) return 1;
+        return 0;
+    });
     displayLibrary();
 }
 
